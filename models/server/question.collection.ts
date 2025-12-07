@@ -6,10 +6,10 @@ import {databases} from "./config";
 export default async function createQuestionCollection(){
     await databases.createCollection(db,questionCollectioin,questionCollectioin,[
         Permission.read("any"),
-        Permission.read("user"),
-        Permission.create("user"),
-        Permission.update("user"),
-        Permission.delete("user")
+        Permission.read("users"),
+        Permission.create("users"),
+        Permission.update("users"),
+        Permission.delete("users")
     ])
     console.log("Question collection created")
 
@@ -23,9 +23,9 @@ export default async function createQuestionCollection(){
     ]);
     console.log("Question attributes created");
     // create index
-    await Promise.all([
+/*     await Promise.all([
         databases.createIndex(db,questionCollectioin,"title",IndexType.Fulltext,["title"],["asc"]),
         databases.createIndex(db,questionCollectioin,"content",IndexType.Fulltext,["content"],["asc"]),
         databases.createIndex(db,questionCollectioin,"title",IndexType.Fulltext,["title"],["asc"])
-    ])
+    ]) */
 }

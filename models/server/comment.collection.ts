@@ -6,9 +6,9 @@ export default async function createCommentCollection(){
     //creating collection
     await databases.createCollection(db,commentCollection,commentCollection,[
         Permission.read("any"),
-        Permission.create("user"),
-        Permission.delete("user"),
-        Permission.update("user"),
+        Permission.create("users"),
+        Permission.delete("users"),
+        Permission.update("users"),
     ])
 
     //create attributes
