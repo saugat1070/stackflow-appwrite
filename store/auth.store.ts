@@ -3,8 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { AppwriteException,ID,Models } from "node-appwrite";
 import { account } from "@/models/client/config";
-import { Noto_Sans_Bhaiksuki } from "next/font/google";
-
+import { cookies } from "next/headers";
 export interface UserPref{
     reputation:number,
 
@@ -44,17 +43,17 @@ export const useAuthStore = create<IAuthStore>()(
                 },
                 async  login(email,password) {
                     try {
-                        const session = await account.createEmailPasswordSession(email,password);
+                        const session = await account.createEmailPasswordSession(email.toString(),password.toString());
                         const [user,{jwt}] = await Promise.all([
                             account.get<UserPref>(),
                             account.createJWT()
                         ]);
-                        if(!user.prefs?.reputation) await account.updatePrefs<UserPref>({reputation:0})
-                        set({session,user:user,jwt});
-                        return {success:true}
-                    } catch (error:any) {
+                        const cookieStorage = await cookies();
+                        cookieStorage.set("auth-token:",jwt);
+                        return { success: true };
+                    } catch (error: any) {
                         console.log(`Error at Login:${error?.message}`);
-                        return {success:false};
+                        return { success: false, error };
                     }
                 },
                 async  createAccount(name,email,password) {
@@ -62,14 +61,14 @@ export const useAuthStore = create<IAuthStore>()(
                         await account.create(ID.unique(),email,password,name)
                         return {success:true}
                     } catch (error:any) {
-                        console.log(`Error at CreatAccount on zustand:${error?.message}`)
+                        console.log(`Error at CreatAccount on zustand:${error}`)
                         return {success:false}
                     }
                 },
                 async  logout() {
                     try {
-                        await account.deleteSessions();
-                        set({session:null,jwt:null,user:null})
+                        // Call API route to logout and clear cookie
+                        const logout = await account.deleteSessions();
                     } catch (error:any) {
                         console.log(`Error at logout:${error?.message}`)
                     }

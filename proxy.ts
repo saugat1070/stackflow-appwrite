@@ -9,7 +9,19 @@ export async function proxy(request: NextRequest) {
         getOrCreateDb(),
         getOrCreateStorage()
     ]);
-    return NextResponse.next();
+    const path = request.nextUrl.pathname;
+    console.log("path:",path)
+    const isPublicpath =  path === "/login" || "/register"
+    console.log("path2:",isPublicpath)
+    // Get JWT from HTTP-only cookie instead of localStorage
+    const authToken = request.cookies.get('auth-token')?.value;
+    console.log(authToken)
+    if (authToken && isPublicpath) {
+      return NextResponse.redirect(new URL("/",request.nextUrl));
+    } 
+    if(!authToken && !isPublicpath) {
+       return NextResponse.redirect(new URL("/login",request.nextUrl))
+    }
 }
  
 
@@ -25,5 +37,7 @@ export const config = {
     */
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    '/login',
+    '/register',
   ],
 }
