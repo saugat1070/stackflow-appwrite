@@ -3,7 +3,6 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { AppwriteException,ID,Models } from "node-appwrite";
 import { account } from "@/models/client/config";
-import { cookies } from "next/headers";
 export interface UserPref{
     reputation:number,
 
@@ -48,8 +47,8 @@ export const useAuthStore = create<IAuthStore>()(
                             account.get<UserPref>(),
                             account.createJWT()
                         ]);
-                        const cookieStorage = await cookies();
-                        cookieStorage.set("auth-token:",jwt);
+                        // const cookieStorage = await cookies();
+                        // cookieStorage.set("auth-token:",jwt);
                         return { success: true };
                     } catch (error: any) {
                         console.log(`Error at Login:${error?.message}`);
